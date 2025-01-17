@@ -1,0 +1,165 @@
+.nav-ul li{
+  display:inline-block;
+  padding:10px;
+}
+
+.nav-ul li a{
+  padding:5px;
+  text-decoration: none;
+  color:white;
+}
+
+.nav-ul{
+  background-color: skyblue;
+  text-align: left;
+  margin:0px;
+  padding:5px;
+}
+
+
+.footer {
+  width:100%;
+  position:absolute;
+  bottom:0px;
+  background-color: skyblue;
+}
+
+.register{
+  margin-left: 0px;
+  margin-top: 85px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+.profile{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-list{
+  text-align: center;
+  margin:auto auto;
+  display:flex;
+  flex-direction: row;
+  padding:5px;
+  width:fit-content;
+  padding-top: 0px;
+  padding-bottom:0px;
+  height:60px;
+  list-style-type: none;
+
+}
+
+.search-box{
+  height:30px;
+  width:400px;
+  margin-bottom:10px;
+  font-size: 16px;
+  border: 2px solid skyblue;
+}
+
+.product-list li{
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  padding:15px;
+  max-width:170px;
+  width:170px;
+  border:skyblue solid 3px;
+}
+
+.product{
+  margin-left: 0px;
+  margin-top: 85px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+.login{
+  margin-left: 0px;
+  margin-top: 85px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.imgContainer{
+  width:200px;
+  height:200px;
+  border: 2px solid skyblue;
+  border-radius: 10px;
+}
+
+.input-box{
+  padding: 10px;
+  display: block;
+  border: 1px solid black;
+  font-size:medium;
+  width: 300px;
+  margin: 16px;
+}
+
+.signup-btn{
+  margin: 20px;
+  width: 150px;
+  padding: 10px;
+  font-size:medium;
+  background-color: skyblue;
+  border: solid 1px;
+  cursor: pointer;
+}
+
+.delete-prod-btn{
+  width: 100px;
+  padding: 10px;
+  font-size:medium;
+  background-color: skyblue;
+  border: solid 1px;
+  cursor: pointer;
+  margin:0px 0px 0px 0px;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
