@@ -5,7 +5,7 @@ config.js:
 const mongoose = require("mongoose")
 mongoose.connect("mongodb://127.0.0.1:27017/e-commerce")
 ```
-
+Here I import the mongoose library and connect to the local e-commerce database
 products.js:
 ```
 const mongoose = require("mongoose")
@@ -20,6 +20,13 @@ const productSchema = new mongoose.Schema({
 
 module.exports = mongoose.model("products",productSchema)
 ```
+Here I create a new Mongoose schema called productSchema.
+The schema defines the fields that each product document will have:
+- name: A String that stores the name of the product.
+- price: A String that stores the price of the product.
+- category: A String that stores the category of the product (e.g., electronics, clothing, etc.).
+- userId: A String that stores the ID of the user who added or owns the product.
+- company: A String that stores the company or brand associated with the product.
 
 user.js:
 ```
@@ -33,8 +40,12 @@ const userSchema = new mongoose.Schema({
 
 module.exports = mongoose.model("users",userSchema)
 ```
+This schema defines the fields that each user document will have:
+- name: A String that stores the name of the user.
+- email: A String that stores the email of the user.
+- password: A String that stores the password of the user.
 
-# Backend
+# Backend(Node.js)
 
 Middleware:
 ```
