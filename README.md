@@ -48,6 +48,7 @@ This schema defines the fields that each user document will have:
 # Backend(Node.js)
 
 Middleware:
+The first two pieces of middleware here app.use(express.json()) and app.use(cors()) are used to parse incoming requests ensuring that any JSON data in the request body is properly parsed into JavaScript objects and enabling Cross-Origin Resource Sharing (CORS), allowing the server to accept requests from different origins. Lastly, we have the middleware function verifyToken which is used to validate JWT tokens in incoming requests. It first checks if the authorization header is present in the request if it is not present then it responds with a 403 status and the "Please Provide a Token" message. If the authorization header is indeed present then if retrieves the token from the authorization header if the token is valid then next() is called passing control to the next piece of middleware, however, if the token is invalid then it responds with a 401 status and the message "Please Provide a Valid Token".
 ```
 app.use(express.json());
 app.use(cors());
@@ -58,7 +59,7 @@ function verifyToken(req,rsp,next){
     token = token.split(" ")[1]
     Jwt.verify(token,jwtKey,(err,valid)=>{
       if(err){
-        rsp.status(401).send({result:"Please Provide a Token"})
+        rsp.status(401).send({result:"Please Provide a Valid Token"})
       }else{
         next()
       }
@@ -72,6 +73,7 @@ function verifyToken(req,rsp,next){
 ```
 
 Register Post Request:
+Here I set up a POST request handler for the /register route which first creates a new instance of the User model defined above using the request body which contains a username,password, and email. Then await user.save() is called in order to save the user instance to the database and the await keyword ensures that the code waits for the saving process to finish before continuing. After deleting the password from result it returns that along with a JWT(Which expires in 2 hours) unless there is an error generating the JWT in which case it responds with the message "Something went wrong".
 ```
 app.post("/register", async (req, rsp) => {
   let user = new User(req.body);
