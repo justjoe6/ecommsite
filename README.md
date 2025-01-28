@@ -207,3 +207,359 @@ app.put("/user/:id", async (req,rsp)=>{
   rsp.send(result)
 });
 ```
+
+# Frontend(React)
+
+PrivateComponent.js:
+```
+const PrivateComponent = () => {
+    const auth = localStorage.getItem("user")
+    
+    return auth ? <Outlet/> : <Navigate to="signup"/>
+}
+```
+
+App.js:
+```
+function App() {
+  return (
+    <div className="App">
+      <BrowserRouter>
+        <Nav/>
+        <Routes>
+          <Route element={<PrivateComponent/>}>
+            <Route path="/" element={<Products/>}/>
+            <Route path="/add" element={<AddProduct/>}/>
+            <Route path="/update/:id" element={<UpdateProduct/>}/>
+            <Route path="/logout" element={<h1>Logout Component</h1>}/>
+            <Route path="/profile/:id" element={<Profile/>}/>
+          </Route>
+          <Route path="/signup" element={<Signup/>}/>
+          <Route path="/login" element={<Login/>}/>
+        </Routes>
+      </BrowserRouter>
+      <Footer/>
+    </div>
+  );
+}
+```
+
+Nav.js:
+```
+const Nav = () => {
+    const auth = localStorage.getItem("user")
+    const navigate = useNavigate()
+    const logout = () => {
+        localStorage.clear()
+        navigate("/signup")
+    }
+    return (
+        <div>
+            <ul className='nav-ul'>
+                {auth && <>
+                <li style={{color:"white"}}>Raabery</li>
+                <li><Link to="/">Products</Link></li>
+                <li><Link to="/add">Add Products</Link></li>
+                <li><Link to={"/profile/"+JSON.parse(auth)._id}>Profile</Link></li></>}
+                {auth ? <li><Link onClick={logout} to="/signup">Logout ({JSON.parse(auth).name})</Link></li> : 
+                <><li> <Link to="/login">Login</Link></li><li><Link to="/signup">SignUp</Link></li></>}
+            </ul>
+        </div>
+    )
+}
+```
+
+Signup.js:
+```
+const Signup = () => {
+    const [name,setName]=useState("")
+    const [password,setPassword]=useState("")
+    const [email,setEmail]=useState("")
+    const navigate = useNavigate()
+    useEffect(()=>{
+        const auth = localStorage.getItem("user")
+        if(auth){
+            navigate("/")
+        }
+    },[])
+
+    const collectData = async () => {
+        let result = await fetch("http://localhost:5000/register",{
+            method:"post",
+            body:JSON.stringify({name,email,password}),
+            headers:{
+                "content-type":"application/json"
+            }
+
+        })
+        result = await result.json()
+        console.log(result)
+        localStorage.setItem("user",JSON.stringify(result.result))
+        localStorage.setItem("token",JSON.stringify(result.auth))
+        navigate("/")
+    }
+
+    return (
+        <div className="register">
+            <h1>Register</h1>
+            <input className="input-box" type="text" placeholder="Enter Name" value={name} onChange={(e)=>setName(e.target.value)}></input>
+            <input className="input-box" type="email" placeholder="Enter Email" value={email} onChange={(e)=>setEmail(e.target.value)}></input>
+            <input className="input-box"  type="password" placeholder="Enter Password" value={password} onChange={(e)=>setPassword(e.target.value)}></input>
+            <button onClick={collectData} className="signup-btn" type="button">Sign up</button>
+        </div>
+    )
+}
+
+```
+
+Login.js:
+```
+const Login = () => {
+    const [email,setEmail] = useState("")
+    const [password,setPassword] = useState("")
+    const navigate = useNavigate()
+
+
+    useEffect(()=>{
+        const auth = localStorage.getItem("user")
+        if(auth){
+            navigate("/")
+        }
+    },[])
+
+    const handleLogin = async () => {
+        let result = await fetch("http://localhost:5000/login",{
+            method:"post",
+            body:JSON.stringify({email,password}),
+            headers:{"Content-Type":"application/json"}
+        })
+        result = await result.json()
+        if(result.auth){
+            localStorage.setItem("user",JSON.stringify(result.user))
+            localStorage.setItem("token",JSON.stringify(result.auth))
+            navigate("/")
+        }   
+        else{
+            alert("Please enter correct details")
+        }
+    }
+
+    return (
+        <div className="login">
+            <h1>Login</h1>
+            <input onChange={(e)=>setEmail(e.target.value)} className="input-box" type="text" placeholder="Enter Email"/>
+            <input onChange={(e)=>setPassword(e.target.value)} className="input-box" type="password" placeholder="Enter Password"/>
+            <button onClick={handleLogin} type="button" className="signup-btn">Login</button>
+        </div>
+    )
+}
+```
+
+AddProduct.js:
+```
+const AddProduct = () => {
+    const [name, setName] = useState("")
+    const [price, setPrice] = useState("")
+    const [category,setCategory] = useState("")
+    const [company,setCompany] = useState("")
+    const [error,setError] = useState(false)
+
+    const addProducts = async ()=>{
+        if(!name || !price || !category || !company){
+            setError(true)
+            return 
+        }
+        console.log(name,price,category,company)
+        const userId = JSON.parse(localStorage.getItem("user"))._id
+        let result = await fetch("http://localhost:5000/add-product",{
+            method:"post",
+            body:JSON.stringify({name,price,category,company,userId}),
+            headers:{"Content-Type":"application/json",
+                authorization:"bearer "+JSON.parse(localStorage.getItem("token"))
+            }
+        })
+        result = result.json()
+        setName("")
+        setPrice("")
+        setCategory("")
+        setCompany("")
+        alert("Product Added")
+        console.log(result)
+    }
+
+    return (
+        <div className="product">
+            <h1>Add Product</h1>
+            <input value={name} onChange={(e)=>setName(e.target.value)} className="input-box" type="text" placeholder="Enter product name"/>
+            {error && !name && <span style={{color:"red",marginTop:"-10px",marginLeft:"-200px"}}>Enter valid name</span>}
+            <input value={price} onChange={(e)=>setPrice(e.target.value)} className="input-box" type="text" placeholder="Enter product price"/>
+            {error && !price && <span style={{color:"red",marginTop:"-10px",marginLeft:"-200px"}}>Enter valid price</span>}
+            <input value={category} onChange={(e)=>setCategory(e.target.value)} className="input-box" type="text" placeholder="Enter product category"/>
+            {error && !category && <span style={{color:"red",marginTop:"-10px",marginLeft:"-180px"}}>Enter valid category</span>}
+            <input value={company} onChange={(e)=>setCompany(e.target.value)} className="input-box" type="text" placeholder="Enter product company"/>
+            {error && !company && <span style={{color:"red",marginTop:"-10px",marginLeft:"-170px"}}>Enter valid company</span>}
+            <button onClick={addProducts} className="signup-btn" type="button">Add Product</button>
+        </div>
+    )
+}
+```
+
+Products.js:
+```
+const Products = () => {
+    const [products,setProducts] = useState([])
+    const loadProducts = async () => {
+        let prods = await fetch("http://localhost:5000/products",{
+            headers:{authorization:"bearer "+JSON.parse(localStorage.getItem("token"))}
+        })
+        prods = await prods.json()
+        setProducts(prods)
+        console.log(prods)
+    }
+
+    const deleteProduct = async (id) => {
+        let del = await fetch("http://localhost:5000/product/"+id,{
+            method:"delete",
+            headers:{authorization:"bearer "+JSON.parse(localStorage.getItem("token"))}
+        })
+        del = await del.json()
+        console.log(del)
+        loadProducts()
+    }
+    useEffect(()=>{
+        loadProducts()
+    },[])
+    let index=0
+    const searchHandle = async (event)=>{
+        if(event.target.value===""){
+            loadProducts()
+        }
+        let result = await fetch("http://localhost:5000/search/"+event.target.value,{
+            method:"get",
+            headers:{authorization:"bearer "+JSON.parse(localStorage.getItem("token"))}
+        })
+        result = await result.json()
+        if(result){
+            setProducts(result)
+        }
+        else{
+            setProducts([])
+        }
+    }
+
+    return (
+        <div>
+            <h1>Products</h1>
+            <input type="text" className="search-box" placeholder="Search Product" onChange={searchHandle}/>
+            <ul className="product-list"><li>Index</li><li>Name</li><li>Price</li><li>Category</li><li>Company</li><li>Operation</li></ul>
+            {products.length > 0 ? products.map((prod)=><ul key={prod} className="product-list">
+                <li>{index+=1}</li>
+                <li>{prod.name}</li>
+                <li>{prod.price}</li>
+                <li>{prod.category}</li>
+                <li>{prod.company}</li>
+                <li><button className="delete-prod-btn" onClick={()=>deleteProduct(prod._id)} type="button">Delete</button>
+                <Link to={"/update/"+prod._id}>Update</Link></li></ul>):<p>No Results Found</p>}
+        </div>
+    )
+}
+```
+
+UpdateProduct.js:
+```
+const UpdateProduct = () => {
+    const [name, setName] = useState("")
+    const [price, setPrice] = useState("")
+    const [category,setCategory] = useState("")
+    const [company,setCompany] = useState("")
+    const [error,setError] = useState(false)
+    const params = useParams()
+    const navigate = useNavigate()
+
+    const setProduct = async ()=>{
+        let result = await fetch("http://localhost:5000/product/"+params.id,{
+            method:"get",
+            headers:{authorization:"bearer "+JSON.parse(localStorage.getItem("token"))}
+        })
+        result = await result.json()
+        setName(result.name)
+        setPrice(result.price)
+        setCategory(result.category)
+        setCompany(result.company)
+    }
+
+    const updateProduct = async ()=> {
+        if(!name || !price || !category || !company){
+            setError(true)
+            return 
+        }
+        let result = await fetch("http://localhost:5000/product/"+params.id,{
+            method:"put",
+            body:JSON.stringify({name,price,category,company}),
+            headers:{"Content-Type":"Application/json",
+                authorization:"bearer "+JSON.parse(localStorage.getItem("token"))
+            }
+        })
+        
+        result = await result.json()
+        console.log(result)
+        alert("Product Updated")
+        navigate("/")
+    }
+
+    useEffect(()=>{
+        setProduct()
+    },[])
+    return (
+        <div className="product">
+            <h1>Update Product</h1>
+            <input value={name} onChange={(e)=>setName(e.target.value)} className="input-box" type="text" placeholder="Enter product name"/>
+            {error && !name && <span style={{color:"red",marginTop:"-10px",marginLeft:"-200px"}}>Enter valid name</span>}
+            <input value={price} onChange={(e)=>setPrice(e.target.value)} className="input-box" type="text" placeholder="Enter product price"/>
+            {error && !price && <span style={{color:"red",marginTop:"-10px",marginLeft:"-200px"}}>Enter valid price</span>}
+            <input value={category} onChange={(e)=>setCategory(e.target.value)} className="input-box" type="text" placeholder="Enter product category"/>
+            {error && !category && <span style={{color:"red",marginTop:"-10px",marginLeft:"-180px"}}>Enter valid category</span>}
+            <input value={company} onChange={(e)=>setCompany(e.target.value)} className="input-box" type="text" placeholder="Enter product company"/>
+            {error && !company && <span style={{color:"red",marginTop:"-10px",marginLeft:"-170px"}}>Enter valid company</span>}
+            <button onClick={()=>updateProduct()} className="signup-btn" type="button">Update Product</button>
+        </div>
+    )
+}
+```
+
+Profile.js:
+```
+import React,{useState} from "react"
+import { useParams } from "react-router-dom"
+
+
+const Profile = () => {
+    const [name,setName]=useState(JSON.parse(localStorage.getItem("user")).name)
+    const params = useParams()
+    const updateProfile = async() => {
+        if(name.length <= 0){
+            return
+        }
+        console.log("http://localhost:5000/user/"+params.id)
+        let result = await fetch("http://localhost:5000/user/"+params.id,{
+            method:"put",
+            body:JSON.stringify({name}),
+            headers:{"Content-Type":"Application/json"}
+        })
+        let currUser = JSON.parse(localStorage.getItem("user"))
+        currUser.name=name
+        localStorage.setItem("user",JSON.stringify(currUser))
+        result= await result.json()
+        console.log(result)
+        window.location.reload();
+    }
+    return (
+        <div className="profile">
+            <h1>Profile</h1>
+            <div className="imgContainer"><p>Click to update</p></div>
+            <input className="input-box" onChange={(e)=>setName(e.target.value)} type="text" placeholder="Enter Username" value={name}/>
+            <button onClick={()=>updateProfile()} type="button" className="signup-btn">Submit Changes</button>
+        </div>
+    )
+}
+```
