@@ -91,6 +91,8 @@ app.post("/register", async (req, rsp) => {
 ```
 
 Login Post Request:
+Here I set up a POST request handler for the /login route which first ensures that the user provided both an email and a password when logging in if one or both are missing then it responds with the message "No User Found". After this User.findOne(req.body) searches for a user in the database whose fields match the provided email and password. The
+.select("-password") Excludes the password field from the returned user object for security reasons. If a user is found then it responds with the user object along with an authentication token that expires in two hours. Otherwise if a user is not found then it responds with the message "No User Found".
 ```
 app.post("/login",async (req, rsp) => {
   if (!req.body.email || !req.body.password) {
@@ -113,6 +115,7 @@ app.post("/login",async (req, rsp) => {
 ```
 
 Add Product Post Request:
+Similar to how users are registered here I set up the POST request handler for the /add-product route which creates a new instance of the product model defined aboe and saves it to the database and finally sends a response containing the result.
 ```
 app.post("/add-product",verifyToken, async (req, rsp) => {
   let product = new Product(req.body);
@@ -122,6 +125,7 @@ app.post("/add-product",verifyToken, async (req, rsp) => {
 ```
 
 Products Get Request:
+Here I set up the GET request handler for the route /products which retrieves all products from the database using Product.find() and if the number of products is greater than 0 it sends a response containing all the products. Otherwise the response contains the message "No Products Found".
 ```
 app.get("/products",verifyToken, async (req, rsp) => {
   let products = await Product.find();
@@ -134,6 +138,7 @@ app.get("/products",verifyToken, async (req, rsp) => {
 ```
 
 Delete Products by ID Request:
+Here I set up the DELETE request handler for the route /product/:id which first retrieves the ID of the product to be deleted from the URL parameters it then deletes the product with the corresponding ID from the database with Product.deleteOne({ _id: id }) and responds with the result.
 ```
 app.delete("/product/:id",verifyToken, async (req, rsp) => {
   const id = req.params.id;
@@ -143,6 +148,7 @@ app.delete("/product/:id",verifyToken, async (req, rsp) => {
 ```
 
 Get Products by ID Request:
+Similar to the DELETE request handler for products here it uses the URL parameter to get the ID of the product to be retrieved from the database if that product is found a response is sent with that product otherwise the message "Product Not Found" is sent.
 ```
 app.get("/product/:id",verifyToken, async (req, rsp) => {
   let result = await Product.findOne({ _id: req.params.id });
@@ -155,6 +161,7 @@ app.get("/product/:id",verifyToken, async (req, rsp) => {
 ```
 
 Product Put Request:
+Again similar the the DELETE and GET request above here it uses the URL parameter to get the ID of the product to be updated then it uses Product.updateOne() to update the product with the corresponding ID with the updated values contained in the request body. Lastly, it responds with the result.
 ```
 app.put("/product/:id",verifyToken, async (req, rsp) => {
   let result = await Product.updateOne(
@@ -169,6 +176,7 @@ app.put("/product/:id",verifyToken, async (req, rsp) => {
 ```
 
 Search Products Get Request:
+Here it uses the parameters key which contains what the user has inputted into the search box then using Product.find() it retrieves all products whose name or company or category the search matches and it responds with all those products that match.
 ```
 app.get("/search/:key",verifyToken,async (req, rsp) => {
   let result = await Product.find({
@@ -190,6 +198,7 @@ app.get("/search/:key",verifyToken,async (req, rsp) => {
 ```
 
 User Put Request:
+Works the same as the Product Put Request except in this case we are updating a user information on the database.
 ```
 app.put("/user/:id", async (req,rsp)=>{
   let result = await User.updateOne({_id:req.params.id},{
