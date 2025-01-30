@@ -211,6 +211,7 @@ app.put("/user/:id", async (req,rsp)=>{
 # Frontend(React)
 
 PrivateComponent.js:
+This component is important as it prevents a user that is not logged in from being able to access routes other than the login and sign up routes.
 ```
 const PrivateComponent = () => {
     const auth = localStorage.getItem("user")
@@ -220,6 +221,7 @@ const PrivateComponent = () => {
 ```
 
 App.js:
+This contains all the routes and their corresponding components you can also see here the routes that are available for an authenticated user and which routes are available for an unauthenticated user.
 ```
 function App() {
   return (
@@ -245,6 +247,7 @@ function App() {
 ```
 
 Nav.js:
+Here we have the component for the NavBar first we retrieve the user item from local storage if none is present then links such as the links to the products page, add products page, profile page will not be displayed, however, links to the signup and login page will be displayed. The opposite is true when a user is found on local storage with the addition of a link to logout the user which clears the user item from local storage and navigates the user to the signup page.
 ```
 const Nav = () => {
     const auth = localStorage.getItem("user")
@@ -270,6 +273,7 @@ const Nav = () => {
 ```
 
 Signup.js:
+In the signup component it first in the useEffect checks local storage to see if the user data is present if it is then we can skip this page and navigate to the homepage(Products Component). Otherwise, input boxes for the user to input their email, name,and password is present. Once they've entered the information and press the signup button an API call is made to http://localhost:5000/register sending that information to the backend(see above Register Post Request). The server then returns the user data and token which is stored locally and the user is navigated to the homepage.
 ```
 const Signup = () => {
     const [name,setName]=useState("")
@@ -313,6 +317,7 @@ const Signup = () => {
 ```
 
 Login.js:
+Here input boxes are displayed asking a user to enter an email and password once a user does this and presses the login button an API call is made to the server("http://localhost:5000/login"). If a user with the details entered is found the server returns that user data along with a token both of which are stored locally. If a user is not found then an alert is displayed with the message "Please enter correct details".
 ```
 const Login = () => {
     const [email,setEmail] = useState("")
