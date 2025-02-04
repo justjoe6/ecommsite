@@ -1,12 +1,19 @@
 # Database (MongoDB)
 
 config.js:
+Here I import the mongoose library and connect to the local e-commerce database
 ```
 const mongoose = require("mongoose")
 mongoose.connect("mongodb://127.0.0.1:27017/e-commerce")
 ```
-Here I import the mongoose library and connect to the local e-commerce database
 products.js:
+Here I create a new Mongoose schema called productSchema.
+The schema defines the fields that each product document will have:
+- name: A String that stores the name of the product.
+- price: A String that stores the price of the product.
+- category: A String that stores the category of the product (e.g., electronics, clothing, etc.).
+- userId: A String that stores the ID of the user who added or owns the product.
+- company: A String that stores the company or brand associated with the product.
 ```
 const mongoose = require("mongoose")
 
@@ -20,15 +27,12 @@ const productSchema = new mongoose.Schema({
 
 module.exports = mongoose.model("products",productSchema)
 ```
-Here I create a new Mongoose schema called productSchema.
-The schema defines the fields that each product document will have:
-- name: A String that stores the name of the product.
-- price: A String that stores the price of the product.
-- category: A String that stores the category of the product (e.g., electronics, clothing, etc.).
-- userId: A String that stores the ID of the user who added or owns the product.
-- company: A String that stores the company or brand associated with the product.
 
 user.js:
+This schema defines the fields that each user document will have:
+- name: A String that stores the name of the user.
+- email: A String that stores the email of the user.
+- password: A String that stores the password of the user.
 ```
 const mongoose = require("mongoose")
 
@@ -40,10 +44,6 @@ const userSchema = new mongoose.Schema({
 
 module.exports = mongoose.model("users",userSchema)
 ```
-This schema defines the fields that each user document will have:
-- name: A String that stores the name of the user.
-- email: A String that stores the email of the user.
-- password: A String that stores the password of the user.
 
 # Backend(Node.js)
 
@@ -411,6 +411,7 @@ const AddProduct = () => {
 ```
 
 Products.js:
+Here in the Products component we first retrieve all the products from the database through an API call to the backend and set the products state to a list of those products. If there are no products then a text reading "No Results Found" is displayed otherwise all products are displayed row by row with their corresponding info (Company,price,etc.). Each row also contains the buttons "Delete" which calls deleteProduct which makes an API call to the backend to remove a product from the database then reloads all products and the "Update" button which sends a user to the UpdateProduct component with the parameter containing the product ID. The functionality of the UpdateProduct component is described in the next section.
 ```
 const Products = () => {
     const [products,setProducts] = useState([])
@@ -472,6 +473,7 @@ const Products = () => {
 ```
 
 UpdateProduct.js:
+THe update product component contains input boxes containing the name, price, category, copmany of the corresponding product all of which is retrieved when the component loads using the setProduct funtion which makes an API call to the backend using the id of the product contained in the parameters. The user can then edit these fields and when they press the Update Product button it calls the updateProduct function. Here similar to the AddProduct component if any field is invalid red text appears below it reading that it is invalid. If all fields are valid then an API all is made to the backend containing all the updated data to update the entry in the database. An alert reading "Product Updated" appears and then the user is sent back the Products component.
 ```
 const UpdateProduct = () => {
     const [name, setName] = useState("")
@@ -534,6 +536,7 @@ const UpdateProduct = () => {
 ```
 
 Profile.js:
+In the Profile component contains an input box to change the username of a user when the button below that field is pressed an API call is made to the backend with the updated username to update the users username in the database. Finally, the local storage user data is updated with the new username and the page is reloaded. Eventually I plan to add functionality for updating and adding a profile picture.
 ```
 import React,{useState} from "react"
 import { useParams } from "react-router-dom"
