@@ -361,6 +361,7 @@ const Login = () => {
 ```
 
 AddProduct.js:
+In the AddProduct component we have multiple input boxes for the user to input the required information to add a product(Company name, category, name of product, and price) below that is a button which when pressed calls the addProducts function which first checks if all the required information is entered if not then it sets the error state to true and returns. This in turn causes red text to appear under where the missing information is for example if a company isn't entered then the text would read "Enter valid company". If all information was added then we make an API call to the backend to add the product with all the necessary info to the database, empty the input fields, and display an alert stating that the product was added.
 ```
 const AddProduct = () => {
     const [name, setName] = useState("")
